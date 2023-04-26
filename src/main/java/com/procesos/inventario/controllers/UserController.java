@@ -64,7 +64,18 @@ public class UserController {
             response.put("message", "No se actualizo el usuario");
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
+    }
 
+    @PostMapping(value = "/login")
+    public ResponseEntity login(@RequestBody User user){
+        Map response = new HashMap();
+        try{
+            return new ResponseEntity(userServiceImp.login(user), HttpStatus.OK);
+        }catch (Exception e){
+            response.put("status", "404");
+            response.put("message", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
