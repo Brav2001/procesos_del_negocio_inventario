@@ -3,6 +3,8 @@ package com.procesos.inventario.services;
 import com.procesos.inventario.models.User;
 import com.procesos.inventario.repository.UserRepository;
 import com.procesos.inventario.utils.JWTUtil;
+import org.jetbrains.annotations.NotNull;
+import com.procesos.inventario.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -53,13 +55,13 @@ public class UserServiceImp implements UserService{
         }
     }
     @Override
-    public String login(User user) {
-        Optional<User> userBD = userRepository.findByEmail(user.getEmail());
+    public String login( User user) {
+        Optional <User> userBD = userRepository.findByEmail(user.getEmail());
         if (userBD.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new RuntimeException(Constants.USER_NOT_FOUND);
         }
         if (!userBD.get().getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Contraseña incorrecta");
+            throw new RuntimeException(Constants.PASSWORD_INCORRECT);
         }
         return jwtUtil.create(String.valueOf(userBD.get().getId()), String.valueOf(user.getEmail()));
     }
