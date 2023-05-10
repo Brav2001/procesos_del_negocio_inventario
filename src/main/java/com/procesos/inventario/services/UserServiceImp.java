@@ -3,11 +3,10 @@ package com.procesos.inventario.services;
 import com.procesos.inventario.models.User;
 import com.procesos.inventario.repository.UserRepository;
 import com.procesos.inventario.utils.JWTUtil;
-import org.jetbrains.annotations.NotNull;
 import com.procesos.inventario.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +18,8 @@ public class UserServiceImp implements UserService{
 
     @Autowired
     private JWTUtil jwtUtil;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User getUser(Long id){
 
@@ -28,9 +29,11 @@ public class UserServiceImp implements UserService{
     @Override
     public Boolean createUser(User user) {
         try{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
             return true;
         }catch(Exception e){
+            System.out.println(e);
             return false;
         }
     }
@@ -48,9 +51,11 @@ public class UserServiceImp implements UserService{
             userBD.setLastName(user.getLastName());
             userBD.setAddress(user.getAddress());
             userBD.setBirthday(user.getBirthday());
+            userBD.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(userBD);
             return true;
         }catch (Exception e){
+            System.out.println(e);
             return false;
         }
     }
@@ -60,7 +65,7 @@ public class UserServiceImp implements UserService{
         if (userBD.isEmpty()) {
             throw new RuntimeException(Constants.USER_NOT_FOUND);
         }
-        if (!userBD.get().getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(user.getPassword(),userBD.get().getPassword())) {
             throw new RuntimeException(Constants.PASSWORD_INCORRECT);
         }
         return jwtUtil.create(String.valueOf(userBD.get().getId()), String.valueOf(user.getEmail()));

@@ -28,7 +28,8 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
-
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
 
 }
 
